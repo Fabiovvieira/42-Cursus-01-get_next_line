@@ -10,48 +10,62 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-
-
-#include<sys/types.h>
-#include<sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
-int	main(void)
+#include<stdlib.h>
+#include<stdio.h>
+#include<fcntl.h>
+#include<errno.h>
+#define BUFFER_SIZE 4
+int main()
 {
-	int	fd;
-	// char	*s = "fabio Valli Vieira";
-	char	c;
-	char 	c1;
-	int	i = 0;
+int fd, sz;
+char *c = (char *) malloc((BUFFER_SIZE + 1) *sizeof(char));
 
-	fd = open("test.txt", O_RDWR | O_CREAT | O_APPEND, S_IRWXU);
-	// fd = open("test.txt", O_RDWR | O_CREAT, S_IRWXU);
-	if (fd == -1)
+fd = open("foo.txt", O_RDONLY | O_CREAT);
+if (fd < 0) { perror("r1"); exit(1); }
+sz = read(fd, c, 1);
+// c = get_next_line(fd);
+printf("Those bytes are as follows: % s\n", c);
+}
+char	*get_next_line(int fd)
+{
+	size_t	buffer;
+	size_t	i;
+	size_t	len;
+	char	*c;
+
+	buffer = BUFFER_SIZE;
+	i = 0;
+	len = read(fd, (void *)&c[i], 1);
+	i++;
+	while (c[i] != '\r')
 	{
-		printf("open() failed\n");
-		return (1);
-	}
-	printf("fd = %d\n", fd);
-	// write(fd, s, strlen(s));
-	// while(read(fd, &c, 1) && i < 6)
-	while(read(fd, &c, 1))
-	{
-		if(c == '\r')
-			break ;
-		printf("%c", c);
+		// ft_read_buffer
+		printf("%s", c[i]);
+		len = read(fd, (void *)&c[i], 1);
 		i++;
 	}
-	// read(fd, &c, 1);
-	// read(fd, &c1, 1);
-	// printf("c=%c\n", c);
-	// printf("c1=%c\n", c1);
-	if (close(fd) == -1)
-	{
-		printf("close() failed\n");
-		return (1);
-	}
-	return (0);
+	return (c);
 }
+size_t	ft_size_line_buffer(int fd, size_t buffer)
+{
+	size_t	i;
+	char	*c;
+
+	i = 0;
+	while (i < buffer)
+	{
+		read(fd, (void *)&c[i], 1);
+git push --set-upstream origin master
+	return (i);
+}
+// char	*ft_read_buffer(int fd, size_t buffer)
+// {
+// 	size_t	i;
+
+// 	i = 0;
+// 	while (i < buffer)
+// 	{
+// 		if ()
+// 	}
+// }
+
