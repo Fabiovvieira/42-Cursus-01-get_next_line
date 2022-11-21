@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.h                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/15 07:24:08 by marvin            #+#    #+#             */
-/*   Updated: 2022/11/15 07:24:08 by marvin           ###   ########.fr       */
+/*   Created: 2022/11/15 07:28:54 by marvin            #+#    #+#             */
+/*   Updated: 2022/11/15 07:28:54 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,11 @@
 #include<unistd.h>
 #include<fcntl.h>
 #include<stdio.h>
-
+#ifndef MAX_FILES_OPENED
+#define MAX_FILES_OPENED 1024
+#endif
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 1
+#define BUFFER_SIZE 100000
 #endif
 
 char	*get_next_line(int fd);

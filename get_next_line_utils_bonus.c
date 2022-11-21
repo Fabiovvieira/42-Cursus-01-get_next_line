@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/15 07:24:04 by marvin            #+#    #+#             */
-/*   Updated: 2022/11/15 07:24:04 by marvin           ###   ########.fr       */
+/*   Created: 2022/11/15 07:28:21 by marvin            #+#    #+#             */
+/*   Updated: 2022/11/15 07:28:21 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_strchr(const char *s, int c)
 {
@@ -83,11 +83,9 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	int		size1;
 	int		size2;
 
-	if (!s2 && !s1)
-		return (ft_strdup(""));
-	if (!s2 && s1)
+	if (!s2)
 		return (ft_strdup(s1));
-	if (!s1 && s2)
+	if (!s1)
 		return (ft_strdup(s2));
 	size1 = ft_strlen(s1);
 	size2 = ft_strlen(s2);
