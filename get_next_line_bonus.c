@@ -1,105 +1,125 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fvalli-v <fvalli-v@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/08 21:48:45 by marvin            #+#    #+#             */
-/*   Updated: 2022/11/08 21:48:45 by marvin           ###   ########.fr       */
+/*   Created: 2022/11/22 11:03:53 by fvalli-v          #+#    #+#             */
+/*   Updated: 2022/11/22 11:03:53 by fvalli-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-void	ft_bzero(void *s, size_t n)
-{
-	unsigned char	*p;
-
-	p = s;
-	while (n--)
-		*(p++) = 0;
-}
 void	*ft_calloc(size_t nmemb, size_t size)
 {
-	void	*p;
+	void			*p;
+	unsigned char	*s;
+	size_t			len;
 
+	len = nmemb * size;
 	p = (void *)malloc(nmemb * size);
 	if (p == NULL)
 		return (p);
-	ft_bzero(p, nmemb * size);
+	s = p;
+	while (len--)
+		*(s++) = 0;
 	return (p);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*get_line(char *str)
 {
-	size_t	size;
-	char	*sub;
-
-	if (!s)
-		return (NULL);
-	size = ft_strlen(s);
-	if ((size_t)start >= size)
-		return (ft_strdup(""));
-	if (size - 1 - start < len)
-		len = size - start;
-	sub = (char *)malloc((len + 1) * sizeof(char));
-	if (!sub)
-		return (NULL);
-	ft_strlcpy(sub, (s + start), len + 1);
-	return (sub);
-}
-
-char *get_line(char** str, ssize_t	len_read)
-{
-	char	*str1;
-	int	i;
+	char	*tmp;
+	int		i;
 
 	i = 0;
-	if ((ft_strchr(*str, '\n')))
+	if (!(*(str + i)))
+		return (NULL);
+	while (*(str + i) && *(str + i) != '\n')
+		i++;
+	tmp = ft_calloc(sizeof(char), (i + 2));
+	i = 0;
+	while (*(str + i) && *(str + i) != '\n')
 	{
-		str1 = ft_strdup(*str);
-		while ((*str)[i] != '\n' && (*str)[i])
-			i++;
-		str1[i + 1] = '\0';
-		*str = ft_substr(*str, i + 1, ft_strlen(*str) - i + 1);
+		*(tmp + i) = *(str + i);
+		i++;
 	}
-	else if (len_read == 0 && (*str)[0] != '\0')
+	*(tmp + i) = *(str + i);
+	return (tmp);
+}
+
+char	*save_rest(char *str)
+{
+	char	*tmp;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (*(str + i) && *(str + i) != '\n')
+		i++;
+	if (!(*(str + i)))
 	{
-		str1 = ft_strdup(*str);
-		while ((*str)[i] != '\0')
-			i++;
-		str1[i + 1] = '\0';
-		*str = ft_substr(*str, i + 1, ft_strlen(*str) - i + 1);
+		free (str);
+		return (NULL);
+	}
+	tmp = ft_calloc(sizeof(char), (ft_strlen(str) - i));
+	i++;
+	while (*(str + i))
+		*(tmp + (j++)) = *(str + (i++));
+	free (str);
+	return (tmp);
+}
+
+char	*ft_read_line(char *str, char *buffer, ssize_t len_read)
+{
+	char	*tmp;
+
+	buffer[len_read] = '\0';
+	if (str == NULL)
+	{
+		tmp = ft_strdup(buffer);
+		free(str);
+		return (tmp);
 	}
 	else
-		str1 = NULL;
-	return (str1);
+	{
+		tmp = ft_strjoin(str, buffer);
+		free(str);
+		return (tmp);
+	}
 }
 
 char	*get_next_line(int fd)
 {
-	char	*buffer;
-	ssize_t	len_read = BUFFER_SIZE;
+	char		*buffer;
+	ssize_t		len_read;
 	static char	*str[MAX_FILES_OPENED];
-	char	*str1;
+	char		*line;
 
-	buffer = calloc(sizeof(char),BUFFER_SIZE + 1);
-	len_read = read(fd, buffer, BUFFER_SIZE);
-	buffer[len_read] = '\0';
-	str[fd] = ft_strjoin(str[fd], buffer);
-	while (!(ft_strchr(str[fd], '\n')) && len_read != 0)
+	len_read = BUFFER_SIZE;
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd >= MAX_FILES_OPENED)
+		return (NULL);
+	buffer = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
+	while (!(ft_strchr(buffer, '\n')) && len_read != 0)
 	{
 		len_read = read(fd, buffer, BUFFER_SIZE);
-		buffer[len_read] = '\0';
-		str[fd] = ft_strjoin(str[fd], buffer);
+		if (len_read == -1)
+		{
+			free (buffer);
+			free (str[fd]);
+			str[fd] = NULL;
+			return (NULL);
+		}
+		str[fd] = ft_read_line(str[fd], buffer, len_read);
 	}
-	str1 = get_line(&(str[fd]),len_read);
 	free(buffer);
-	return (str1);
+	line = get_line(str[fd]);
+	str[fd] = save_rest(str[fd]);
+	return (line);
 }
-
-int main()
+/*int main()
 {
 	int fd,fd1,fd2;
 	char	*str,*str1,*str2;
@@ -114,26 +134,33 @@ int main()
 	i = 0;
 	while ((str = get_next_line(fd)))
 	{
-		printf("fd - %3d || LINE - %3d || lengh - %3d: %s",fd,i++,ft_strlen(str), str);
+		printf("fd - %3d || LINE - %3d || lengh -
+		%3d: %s",fd,i++,ft_strlen(str), str);
 	}
 	i = 0;
 	while ((str1 = get_next_line(fd1)))
 	{
-		printf("fd - %3d || LINE - %3d || lengh - %3d: %s",fd1,i++,ft_strlen(str1), str1);
+		printf("fd - %3d || LINE - %3d || lengh -
+		%3d: %s",fd1,i++,ft_strlen(str1), str1);
 	}
 	i = 0;
 	while ((str2 = get_next_line(fd2)))
 	{
-		printf("fd - %3d || LINE - %3d || lengh - %3d: %s",fd2,i++,ft_strlen(str2), str2);
+		printf("fd - %3d || LINE - %3d || lengh -
+		%3d: %s",fd2,i++,ft_strlen(str2), str2);
 	}
 
-	// while ((str2 = get_next_line(fd2)) && (str1 = get_next_line(fd1)) && (str = get_next_line(fd)))
+	// while ((str2 = get_next_line(fd2)) &&
+	(str1 = get_next_line(fd1)) && (str = get_next_line(fd)))
 	// {
-	// 	printf("fd - %3d || LINE - %3d || lengh - %3d: %s",fd,i++,ft_strlen(str), str);
-	// 	printf("fd - %3d || LINE - %3d || lengh - %3d: %s",fd1,i++,ft_strlen(str1), str1);
-	// 	printf("fd - %3d || LINE - %3d || lengh - %3d: %s",fd2,i++,ft_strlen(str2), str2);
+	// 	printf("fd - %3d || LINE - %3d || lengh -
+	%3d: %s",fd,i++,ft_strlen(str), str);
+	// 	printf("fd - %3d || LINE - %3d || lengh -
+	%3d: %s",fd1,i++,ft_strlen(str1), str1);
+	// 	printf("fd - %3d || LINE - %3d || lengh -
+	%3d: %s",fd2,i++,ft_strlen(str2), str2);
 	// }
 
 
 	return (0);
-}
+}*/

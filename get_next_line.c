@@ -12,75 +12,67 @@
 
 #include "get_next_line.h"
 
-void	ft_bzero(void *s, size_t n)
-{
-	unsigned char	*p;
-
-	p = s;
-	while (n--)
-		*(p++) = 0;
-}
 void	*ft_calloc(size_t nmemb, size_t size)
 {
-	void	*p;
+	void			*p;
+	unsigned char	*s;
+	size_t			len;
 
+	len = nmemb * size;
 	p = (void *)malloc(nmemb * size);
 	if (p == NULL)
 		return (p);
-	ft_bzero(p, nmemb * size);
+	s = p;
+	while (len--)
+		*(s++) = 0;
 	return (p);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*get_line(char *str)
 {
-	size_t	size;
-	char	*sub;
-
-	if (!s)
-		return (NULL);
-	size = ft_strlen(s);
-	if ((size_t)start >= size)
-		return (ft_strdup(""));
-	if (size - 1 - start < len)
-		len = size - start;
-	sub = (char *)malloc((len + 1) * sizeof(char));
-	if (!sub)
-		return (NULL);
-	ft_strlcpy(sub, (s + start), len + 1);
-	return (sub);
-}
-
-char *get_line(char** str, ssize_t	len_read)
-{
-	char	*str1;
 	char	*tmp;
-	int	i;
+	int		i;
 
 	i = 0;
-	tmp = ft_strdup(*str);
-	if ((ft_strchr(*str, '\n')))
+	if (!(*(str + i)))
+		return (NULL);
+	while (*(str + i) && *(str + i) != '\n')
+		i++;
+	tmp = ft_calloc(sizeof(char), (i + 2));
+	i = 0;
+	while (*(str + i) && *(str + i) != '\n')
 	{
-		str1 = ft_strdup(*str);
-		while ((*str)[i] != '\n' && (*str)[i])
-			i++;
-		str1[i + 1] = '\0';
-		*str = ft_substr(tmp, i + 1, ft_strlen(tmp) - i + 1);
+		*(tmp + i) = *(str + i);
+		i++;
 	}
-	else if (len_read == 0 && (*str)[0] != '\0')
-	{
-		str1 = ft_strdup(*str);
-		while ((*str)[i] != '\0')
-			i++;
-		str1[i] = '\0';
-		*str = ft_substr(tmp, i + 1, ft_strlen(tmp) - i + 1);
-	}
-	else
-		str1 = NULL;
-	free (tmp);
-	return (str1);
+	*(tmp + i) = *(str + i);
+	return (tmp);
 }
 
-static char *ft_read_line(char *str, char *buffer, ssize_t len_read)
+char	*save_rest(char *str)
+{
+	char	*tmp;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (*(str + i) && *(str + i) != '\n')
+		i++;
+	if (!(*(str + i)))
+	{
+		free (str);
+		return (NULL);
+	}
+	tmp = ft_calloc(sizeof(char), (ft_strlen(str) - i));
+	i++;
+	while (*(str + i))
+		*(tmp + (j++)) = *(str + (i++));
+	free (str);
+	return (tmp);
+}
+
+char	*ft_read_line(char *str, char *buffer, ssize_t len_read)
 {
 	char	*tmp;
 
@@ -89,33 +81,43 @@ static char *ft_read_line(char *str, char *buffer, ssize_t len_read)
 	{
 		tmp = ft_strdup(buffer);
 		free(str);
+		return (tmp);
 	}
 	else
 	{
 		tmp = ft_strjoin(str, buffer);
 		free(str);
+		return (tmp);
 	}
-	return (tmp);
 }
 
 char	*get_next_line(int fd)
 {
-	char	*buffer;
-	ssize_t	len_read = BUFFER_SIZE;
+	char		*buffer;
+	ssize_t		len_read;
 	static char	*str;
-	char	*str1;
+	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) == -1)
+	len_read = BUFFER_SIZE;
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = ft_calloc(sizeof(char),(BUFFER_SIZE + 1));
+	buffer = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
 	while (!(ft_strchr(buffer, '\n')) && len_read != 0)
 	{
 		len_read = read(fd, buffer, BUFFER_SIZE);
-		str = ft_read_line(str,buffer, len_read);
+		if (len_read == -1)
+		{
+			free (buffer);
+			free (str);
+			str = NULL;
+			return (NULL);
+		}
+		str = ft_read_line(str, buffer, len_read);
 	}
-	str1 = get_line(&str,len_read);
 	free(buffer);
-	return (str1);
+	line = get_line(str);
+	str = save_rest(str);
+	return (line);
 }
 /*int main()
 {
@@ -125,13 +127,11 @@ char	*get_next_line(int fd)
 	int	i;
 
 	i = 1;
-	fd = open("foo.txt", O_RDONLY | O_CREAT);
+	fd = open("foo1.txt", O_RDONLY | O_CREAT);
 	if (fd < 0) { perror("r1"); exit(1); }
 	printf("BUFFER SIZE is:%lu\n", len_read);
 	while ((str = get_next_line(fd)))
-	{
-			printf("LINE - %3d || lengh - %3lu: %s",i++,ft_strlen(str), str);
-	}
+		printf("LINE - %3d || lengh - %3lu: %s",i++,ft_strlen(str), str);
 	free(str);
 	return (0);
 }*/

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: fvalli-v <fvalli-v@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/15 07:28:21 by marvin            #+#    #+#             */
-/*   Updated: 2022/11/15 07:28:21 by marvin           ###   ########.fr       */
+/*   Created: 2022/11/22 11:03:43 by fvalli-v          #+#    #+#             */
+/*   Updated: 2022/11/22 11:03:43 by fvalli-v         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,9 +83,11 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	int		size1;
 	int		size2;
 
-	if (!s2)
+	if (!s2 && !s1)
+		return (ft_strdup(""));
+	if (!s2 && s1)
 		return (ft_strdup(s1));
-	if (!s1)
+	if (!s1 && s2)
 		return (ft_strdup(s2));
 	size1 = ft_strlen(s1);
 	size2 = ft_strlen(s2);
