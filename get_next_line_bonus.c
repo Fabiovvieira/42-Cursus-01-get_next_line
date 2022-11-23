@@ -95,11 +95,11 @@ char	*get_next_line(int fd)
 {
 	char		*buffer;
 	ssize_t		len_read;
-	static char	*str[MAX_FILES_OPENED];
+	static char	*str[FOPEN_MAX];
 	char		*line;
 
 	len_read = BUFFER_SIZE;
-	if (fd < 0 || BUFFER_SIZE <= 0 || fd >= MAX_FILES_OPENED)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > FOPEN_MAX)
 		return (NULL);
 	buffer = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
 	while (!(ft_strchr(buffer, '\n')) && len_read != 0)
@@ -125,11 +125,11 @@ char	*get_next_line(int fd)
 	char	*str,*str1,*str2;
 	int	i;
 
-	fd = open("foo.txt", O_RDONLY | O_CREAT);
+	fd = open("../foo.txt", O_RDONLY | O_CREAT);
 	if (fd < 0) { perror("r1"); exit(1); }
-	fd1 = open("foo1.txt", O_RDONLY | O_CREAT);
+	fd1 = open("../foo1.txt", O_RDONLY | O_CREAT);
 	if (fd1 < 0) { perror("r1"); exit(1); }
-	fd2 = open("foo2.txt", O_RDONLY | O_CREAT);
+	fd2 = open("../foo2.txt", O_RDONLY | O_CREAT);
 	if (fd2 < 0) { perror("r1"); exit(1); }
 	i = 0;
 	while ((str = get_next_line(fd)))

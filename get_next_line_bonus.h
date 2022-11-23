@@ -18,9 +18,6 @@
 # include<fcntl.h>
 # include<stdio.h>
 
-# ifndef MAX_FILES_OPENED
-#  define MAX_FILES_OPENED 65536
-# endif
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1
 # endif

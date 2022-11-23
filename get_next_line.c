@@ -127,7 +127,7 @@ char	*get_next_line(int fd)
 	int	i;
 
 	i = 1;
-	fd = open("foo1.txt", O_RDONLY | O_CREAT);
+	fd = open("../foo1.txt", O_RDONLY | O_CREAT);
 	if (fd < 0) { perror("r1"); exit(1); }
 	printf("BUFFER SIZE is:%lu\n", len_read);
 	while ((str = get_next_line(fd)))
