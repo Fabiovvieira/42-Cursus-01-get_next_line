@@ -125,11 +125,11 @@ char	*get_next_line(int fd)
 	char	*str,*str1,*str2;
 	int	i;
 
-	fd = open("../foo.txt", O_RDONLY | O_CREAT);
+	fd = open("tests/foo.txt", O_RDONLY | O_CREAT);
 	if (fd < 0) { perror("r1"); exit(1); }
-	fd1 = open("../foo1.txt", O_RDONLY | O_CREAT);
+	fd1 = open("tests/foo1.txt", O_RDONLY | O_CREAT);
 	if (fd1 < 0) { perror("r1"); exit(1); }
-	fd2 = open("../foo2.txt", O_RDONLY | O_CREAT);
+	fd2 = open("tests/foo2.txt", O_RDONLY | O_CREAT);
 	if (fd2 < 0) { perror("r1"); exit(1); }
 	i = 0;
 	while ((str = get_next_line(fd)))
